@@ -24,6 +24,25 @@ The default requested window is January 1, 2026 through September 30, 2026, incl
 
 The calendar is aligned to Sunday. Partial weeks at the start and end are represented, but the default one-week inset leaves those boundary columns unused. The mapper validates every planned date and never creates a commit outside the requested date window.
 
+## Full calendar preview
+
+Run the default dry run:
+
+```bash
+python scripts/generate.py
+```
+
+The output includes:
+
+- The five-row text artwork.
+- A seven-row calendar preview with 40 weekly columns.
+- Empty Sunday and Saturday rows.
+- The number of active pixels.
+- The number of dates used.
+- The total number of planned commits.
+
+The calendar preview is visual only. It does not create Git commits.
+
 ## Commits per pixel
 
 The default is six commits for every filled pixel. Empty pixels produce no commits. The number can be changed with `--commits-per-pixel`.
