@@ -1,17 +1,23 @@
 # 02 — Pixel-Art Fundamentals
 
-## What is a pixel?
+This guide explains the visual model behind Code Is Art. Before editing Python code, learn how a small grid can represent a letter.
 
-A pixel is one small cell in a digital image. In this project, each pixel is represented by a Boolean value:
+## 1. What is a pixel?
 
-- `1` or `True`: filled pixel.
-- `0` or `False`: empty pixel.
+A pixel is one cell in a digital image. A bitmap stores whether each cell is on or off.
 
-A character is a two-dimensional grid of pixels.
+In this project:
 
-## A 5×5 example
+| Symbol | Meaning | Python value |
+| --- | --- | --- |
+| `#` | Filled pixel | `True` |
+| `.` | Empty pixel | `False` |
 
-The letter A can be represented as:
+A letter is a grid of these cells. The grid is called a *bitmap* or *glyph*.
+
+## 2. Read a 5×5 glyph
+
+Here is the letter A:
 
 ```text
 .###.
@@ -21,11 +27,13 @@ The letter A can be represented as:
 #...#
 ```
 
-This grid has five rows and five columns. The first row is `.###.`: the middle three pixels are filled.
+It has five rows and five columns. In the first row, the three middle cells are filled and the two outer cells are empty.
 
-## Matrix representation
+Count both dimensions carefully: 5 rows × 5 columns = 25 cells.
 
-The same letter can be stored as a tuple of strings:
+## 3. Represent the glyph in Python
+
+The font file stores each glyph as a tuple of five strings:
 
 ```python
 LETTER_A = (
@@ -37,36 +45,118 @@ LETTER_A = (
 )
 ```
 
-A matrix is useful because we can access a pixel by its row and column:
+Each string is one row. Each character in the string is one pixel.
+
+The project later converts these symbols into Boolean values. For example, `#` becomes `True` and `.` becomes `False`.
+
+## 4. Understand rows, columns, and indexes
+
+Python uses zero-based indexing. The first item has index 0, not index 1.
 
 ```python
-pixel = LETTER_A[2][3]
+row = LETTER_A[2]       # third row: "#...#"
+pixel = LETTER_A[2][3]  # fourth cell in that row: "."
 ```
 
-Python indexes start at zero, so this reads row 3, column 4.
+The first index selects a row; the second selects a column.
 
-## Combining letters
+For a matrix named `matrix`, use:
 
-To write a word, place glyphs side by side and insert a column gap between them. Each glyph has the same height, so the resulting artwork remains rectangular.
+```python
+matrix[row_index][column_index]
+```
 
-## Mapping pixels to dates
+In this project, artwork coordinates are written as `(x, y)`: `x` is the column and `y` is the row. This is the reverse order from Python's access syntax, so the corresponding access is `matrix[y][x]`.
 
-GitHub's contribution calendar is arranged in columns of weeks and rows of weekdays. The top row is Sunday and the bottom row is Saturday.
+## 5. Why must a matrix be rectangular?
 
-This project maps its five artwork rows to Monday, Tuesday, Wednesday, Thursday, and Friday. Sunday and Saturday are deliberately never assigned pixels.
+A matrix is rectangular when every row has the same number of columns.
 
-A filled pixel on a date becomes exactly one planned commit for that date by default. Empty pixels produce no commits.
+Valid:
 
-## Previewing the complete calendar
+```text
+.#.
+###
+..#
+```
 
-A normal artwork preview displays only the five rows of letters. A dry run also prints the full seven-row contribution calendar, including empty Sunday and Saturday rows and the reserved boundary weeks:
+Invalid:
+
+```text
+.#.
+###
+.. 
+```
+
+The invalid example has rows of different widths. A rectangular matrix makes it possible to map each column to a calendar week without ambiguity.
+
+## 6. Combine glyphs into text
+
+To render a word, the program places glyphs side by side:
+
+1. Start with five empty output rows.
+2. Read one character from the input text.
+3. Find its five-row glyph in the selected font.
+4. Append each glyph row to the matching output row.
+5. Insert the configured horizontal gap between characters.
+6. Insert a wider gap for a word space.
+
+The result is still five rows high, but its width depends on the text.
+
+The full font uses 5-column glyphs, a 1-column letter gap, and a 3-column word gap. The compact font uses 3-column glyphs, a 1-column letter gap, and a 2-column word gap.
+
+## 7. From text symbols to Boolean pixels
+
+The renderer converts each row into Boolean values:
+
+```python
+pixel = (symbol == "#")
+```
+
+This expression evaluates to `True` when the symbol is `#`, and `False` otherwise.
+
+The complete artwork is therefore a list of five lists. Each inner list represents one row of pixels.
+
+## 8. Count the active pixels
+
+An active pixel is a cell whose value is `True`.
+
+For example:
+
+```python
+sample = [
+    [True, False, True],
+    [False, True, False],
+]
+```
+
+There are three active pixels. The project's renderer provides `count_active_pixels()` to calculate this total.
+
+## 9. Preview the result
+
+From the repository root:
 
 ```bash
-python scripts/generate.py
+python scripts/generate.py --text "A" --font 5x5 --preview
+python scripts/generate.py --text "CODE" --font 3x5 --preview
 ```
 
-The full calendar preview has one column for every Sunday-to-Saturday week intersecting the requested date range.
+The first command uses the full font; the second uses the compact font.
 
-## Important distinction
+## Key ideas to remember
 
-A pixel is an artwork cell. A commit is a Git object. The program keeps these concepts separate: the renderer creates pixels, the calendar maps pixels to dates, and the generator creates a commit plan.
+- A glyph is a small bitmap representing one character.
+- A matrix is a rectangular arrangement of rows and columns.
+- `matrix[y][x]` accesses row `y`, column `x`.
+- `True` means filled; `False` means empty.
+- Combining glyphs means joining their rows horizontally.
+- The artwork always has five rows because it will map to five weekdays.
+
+## Exercises
+
+1. Count the filled pixels in the letter A shown above.
+2. In `LETTER_A[4][0]`, which row and column are selected?
+3. Explain why a row with four cells cannot be combined safely with rows that have five cells.
+4. Draw a 5×5 letter of your choice using only `#` and `.`.
+
+**Answers:** 1. 15. 2. The fifth row and first column. 3. The matrix would not be rectangular, so column positions would not line up. 4. Answers vary; check that your glyph has exactly five rows and five symbols in each row.
