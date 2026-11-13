@@ -12,7 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from code_is_art.alphabet import render_text  # noqa: E402
-from code_is_art.calendar import calendar_week_count  # noqa: E402
+from code_is_art.calendar import (  # noqa: E402
+    calendar_week_count,
+    render_calendar_matrix,
+)
 from code_is_art.generator import (  # noqa: E402
     build_commit_plan,
     execute_local_plan,
@@ -51,7 +54,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--preview", action="store_true",
-        help="Print the artwork and exit without building a commit plan.",
+        help="Print the five-row artwork and exit without a commit plan.",
     )
     parser.add_argument(
         "--execute", action="store_true",
@@ -70,6 +73,15 @@ def main() -> int:
             return 0
 
         weeks = calendar_week_count(args.start, args.end)
+        calendar_matrix = render_calendar_matrix(
+            matrix, args.start, args.end, args.offset_weeks
+        )
+        print("\nContribution calendar preview (Sunday to Saturday)")
+        print("      " + " ".join(f"{index + 1:02}" for index in range(weeks)))
+        print(render_ascii(calendar_matrix, separator=" "))
+        print("      " + " ".join("^^" for _ in range(weeks)))
+        print("      Sunday and Saturday rows are intentionally empty.")
+
         plan = build_commit_plan(
             matrix, args.start, args.end,
             args.commits_per_pixel, args.offset_weeks,
