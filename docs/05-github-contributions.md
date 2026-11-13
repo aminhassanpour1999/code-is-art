@@ -45,9 +45,7 @@ The calendar preview is visual only. It does not create Git commits.
 
 ## Commits per pixel
 
-The default is six commits for every filled pixel. Empty pixels produce no commits. The number can be changed with `--commits-per-pixel`.
-
-A group of six commits on the same date is still one active calendar cell; the cell's intensity depends on GitHub's contribution-count thresholds.
+The default is exactly one commit for every filled pixel. Empty pixels produce no commits. The number can be changed with `--commits-per-pixel` if a different contribution intensity is intentionally desired. One commit is sufficient to mark a contribution on that date.
 
 ## Dry run first
 
