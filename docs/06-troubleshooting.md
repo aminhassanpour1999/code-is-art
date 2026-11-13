@@ -22,11 +22,21 @@ Alternatively, run the script from the repository root; it adds the source direc
 
 ## Unsupported character
 
-The font supports uppercase A–Z, digits, and the punctuation listed in `04-font-reference.md`. Remove the unsupported character or add a glyph to `FONT`.
+The full 5×5 font supports uppercase A–Z, digits 0–9, and the punctuation listed in `04-font-reference.md`.
+
+The compact 3×5 font supports uppercase A–Z and spaces only. If your phrase contains digits or punctuation, use `--font 5x5`.
+
+Text is converted to uppercase automatically. Unsupported characters produce an error instead of being silently removed.
 
 ## Artwork does not fit
 
-The calendar mapper checks the width before planning commits. Shorten the text, use a shorter phrase, or choose a wider date window. The program does not silently crop artwork.
+The calendar mapper checks the width before planning commits. Shorten the text, use the compact font, or choose a wider date window. The program does not silently crop artwork.
+
+Example:
+
+```bash
+python scripts/generate.py --text "HELLO WORLD" --font 3x5 --preview
+```
 
 ## Date outside the configured window
 
