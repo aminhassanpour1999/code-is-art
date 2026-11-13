@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import date
 from collections.abc import Sequence
+from datetime import date
 
 from .renderer import matrix_dimensions
 
@@ -26,6 +26,6 @@ def validate_date_window(start: date, end: date) -> None:
 
 
 def validate_commits_per_pixel(count: int) -> None:
-    """Require a positive number of commits per active pixel."""
-    if isinstance(count, bool) or count < 1:
+    """Require a positive integer number of commits per active pixel."""
+    if isinstance(count, bool) or not isinstance(count, int) or count < 1:
         raise ValueError("commits_per_pixel must be a positive integer.")
