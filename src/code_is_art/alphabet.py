@@ -58,13 +58,13 @@ SPACE_WIDTH = 3
 
 
 def normalize_text(text: str) -> str:
-    """Normalize input to uppercase and reject unsupported characters."""
-    normalized = text.upper()
+    """Normalize input to uppercase and trim surrounding whitespace."""
+    normalized = text.upper().strip()
     unsupported = sorted(set(normalized) - set(FONT) - {" "})
     if unsupported:
         chars = ", ".join(repr(char) for char in unsupported)
         raise ValueError(f"Unsupported character(s): {chars}")
-    if not normalized.strip():
+    if not normalized:
         raise ValueError("Text must contain at least one visible character.")
     return normalized
 
@@ -109,9 +109,5 @@ def render_text(text: str) -> list[list[bool]]:
         for index, line in enumerate(glyph):
             rows[index].extend(pixel == "#" for pixel in line)
         previous_was_space = False
-
-    while rows[0] and all(not row[-1] for row in rows):
-        for row in rows:
-            row.pop()
 
     return rows
