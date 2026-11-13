@@ -21,7 +21,7 @@ Here is the letter A:
 
 ```text
 .###.
-#...
+#...#
 #...#
 #####
 #...#
@@ -85,7 +85,7 @@ Invalid:
 ```text
 .#.
 ###
-.. 
+..
 ```
 
 The invalid example has rows of different widths. A rectangular matrix makes it possible to map each column to a calendar week without ambiguity.
