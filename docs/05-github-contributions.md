@@ -1,74 +1,154 @@
-# 05 — GitHub Contributions and Dates
+# 05 — Calendar Mapping, Git, and GitHub Contributions
 
-This guide explains the calendar model and what the generator does.
+This guide explains how a five-row artwork becomes dates in a seven-row calendar, how the program plans commits, and what happens when you publish them.
 
-## Calendar layout
+## 1. Understand the calendar
 
-GitHub displays contribution activity in a Sunday-to-Saturday grid:
+GitHub's contribution calendar is arranged in columns of weeks. Each column contains seven weekday rows, Sunday through Saturday.
 
-| Calendar row | Day | Artwork mapping |
+| Calendar row | Weekday | Artwork row |
 | --- | --- | --- |
 | 0 | Sunday | Always empty |
-| 1 | Monday | Artwork row 0 |
-| 2 | Tuesday | Artwork row 1 |
-| 3 | Wednesday | Artwork row 2 |
-| 4 | Thursday | Artwork row 3 |
-| 5 | Friday | Artwork row 4 |
+| 1 | Monday | 0 |
+| 2 | Tuesday | 1 |
+| 3 | Wednesday | 2 |
+| 4 | Thursday | 3 |
+| 5 | Friday | 4 |
 | 6 | Saturday | Always empty |
 
-The artwork itself is five rows tall. The mapper places those rows on Monday through Friday, leaving the top and bottom contribution rows empty.
+The artwork is five rows high, so it maps to Monday–Friday. Sunday and Saturday are deliberately excluded.
 
-## Project date window
+## 2. Understand calendar columns
 
-The default requested window is January 1, 2026 through September 30, 2026, inclusive.
+The default date range is inclusive:
 
-The calendar is aligned to Sunday. Partial weeks at the start and end are represented, but the default one-week inset leaves those boundary columns unused. The mapper validates every planned date and never creates a commit outside the requested date window.
+- Start: 2026-01-01
+- End: 2026-09-30
 
-## Full calendar preview
+The first Sunday on or before the start date is 2025-12-28. The last Sunday starting a week that intersects the end date is 2026-09-27. Therefore, the requested range intersects 40 Sunday-to-Saturday calendar columns.
 
-Run the default dry run:
+The default `offset-weeks` value is 1. It reserves the first and last calendar columns, leaving:
+
+```text
+40 total columns - 1 first boundary column - 1 last boundary column
+= 38 available artwork columns
+```
+
+The mapper places the artwork beginning one week after the first Sunday. Every active pixel must still map to a date inside the inclusive requested date range. If a pixel would land outside the range, planning fails with an error.
+
+## 3. How a pixel becomes a date
+
+The artwork uses coordinates `(x, y)`:
+
+- `x` is the horizontal column in the artwork.
+- `y` is the vertical row, where 0 is Monday and 4 is Friday.
+
+For each active pixel, the mapper:
+
+1. Finds the Sunday at or before the start date.
+2. Moves forward by the reserved offset plus the pixel's `x` column.
+3. Adds `y + 1` days to reach Monday through Friday.
+4. Checks that the resulting date is inside the requested range.
+
+The calendar module uses Python's `date` and `timedelta` objects to perform this arithmetic. It does not guess weekday positions from the current month view.
+
+## 4. Preview the complete calendar
+
+Run a dry run:
 
 ```bash
 python scripts/generate.py
 ```
 
-The output includes:
+The output contains:
 
-- The five-row text artwork.
-- A seven-row calendar preview with 40 weekly columns.
-- Empty Sunday and Saturday rows.
-- The number of active pixels.
+- The five-row artwork.
+- A seven-row Sunday-to-Saturday calendar preview.
+- One column for each of the 40 calendar weeks.
+- The active-pixel count.
 - The number of dates used.
-- The total number of planned commits.
+- The planned commit count.
 
-The calendar preview is visual only. It does not create Git commits.
+A dry run only calculates and prints a plan. It does not create commits.
 
-## Commits per pixel
+## 5. Understand commits per pixel
 
-The default is exactly one commit for every filled pixel. Empty pixels produce no commits. The number can be changed with `--commits-per-pixel` if a different contribution intensity is intentionally desired. One commit is sufficient to mark a contribution on that date.
+By default, every filled pixel produces exactly one planned commit. Empty pixels produce none.
 
-## Dry run first
+For the default artwork:
 
-The default behavior is a preview and plan only:
-
-```bash
-python scripts/generate.py --text "CODE" --start 2026-01-01 --end 2026-09-30
+```text
+Active pixels:  78
+Dates used:     78
+Commits planned: 78
 ```
 
-No Git history is changed unless you explicitly add `--execute`.
+These numbers are specific to the default `CODE IS ART` artwork and date settings. A different phrase or font can produce a different number.
 
-## GitHub eligibility
+The `--commits-per-pixel` option changes the number of commits planned for each filled pixel. The default is 1; increasing it is not necessary to mark a contribution date.
 
-GitHub contribution graphs have eligibility rules. In general, commits must be associated with the account through a verified email address and exist in an eligible repository branch. See the current official documentation:
+## 6. Local commits are not the same as a push
+
+A Git commit is stored in the local repository. A push sends local commits to a remote repository such as GitHub.
+
+Dry run:
+
+```bash
+python scripts/generate.py
+```
+
+Create local commits only after reviewing the plan:
+
+```bash
+python scripts/generate.py --execute
+```
+
+Inspect the result:
+
+```bash
+git log -10 --format="%h | %ad | %s" --date=short
+git status --short
+```
+
+The generator does not push, switch branches, or rewrite remote history. Each execution creates a new set of empty commits. The current version does not detect a repeated execution, so do not run `--execute` again for the same plan unless you intentionally want another set of commits.
+
+If you decide to publish, first confirm that you are on the intended branch and that the commits you want to send are the only outgoing commits:
+
+```bash
+git status
+git branch --show-current
+git log --oneline origin/main..HEAD
+```
+
+Only then push deliberately:
+
+```bash
+git push origin HEAD:main
+```
+
+Never use `--force` as a routine fix for a rejected push. Stop and inspect the branch histories first.
+
+## 7. GitHub contribution eligibility
+
+A commit appearing in repository history does not automatically guarantee that it appears on a profile contribution graph. GitHub applies eligibility rules. Among other requirements, the commit must be associated with the account through an email address added to that account, and it must be on an eligible branch or otherwise meet GitHub's contribution rules.
+
+Check GitHub's current documentation before troubleshooting the graph:
 
 https://docs.github.com/en/account-and-profile/concepts/contributions-on-your-profile
 
-This project cannot guarantee how GitHub will display a commit. Verify the account email, repository visibility, branch, and contribution settings before expecting graph changes.
+Also check the repository's visibility and your profile's contribution settings. The graph may take time to refresh.
 
-## Local execution and publishing
+## 8. Be transparent about generated activity
 
-The generator creates local commits only. It never pushes, force-pushes, changes branches, or rewrites remote history. Inspect the resulting local history before deciding whether to publish it.
+The commits produced by this project are synthetic artwork data. They are generated to map a visual pattern onto dates; they are not evidence that separate software-development tasks were performed on those dates.
 
-## Transparency
+Use this project as a programming and pixel-art experiment, and describe the generated history honestly.
 
-Generated commits are synthetic artwork data, not evidence of separate software-development tasks. Do not present them as a record of work that was not performed.
+## Key ideas to remember
+
+- A calendar column represents one Sunday-to-Saturday week.
+- Artwork row 0 maps to Monday, not Sunday.
+- Artwork row 4 maps to Friday.
+- Sunday and Saturday remain empty.
+- A filled pixel becomes a planned commit; an empty pixel does not.
+- Dry run, local commit creation, and pushing are three separate stages.
