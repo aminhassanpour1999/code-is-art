@@ -4,7 +4,7 @@
 
 **Code Is Art** is an educational Python project that converts text into pixel artwork and maps the pixels onto GitHub's contribution-calendar layout.
 
-The project is designed to teach the complete process: bitmap fonts, two-dimensional matrices, calendar arithmetic, Git automation, validation, and testing.
+The project teaches the complete process: bitmap fonts, two-dimensional matrices, calendar arithmetic, Git automation, validation, and testing.
 
 ## Features
 
@@ -31,11 +31,11 @@ The project is designed to teach the complete process: bitmap fonts, two-dimensi
 | Calendar bottom row | Saturday — always empty |
 | License | MIT |
 
-The date window contains 40 Sunday-to-Saturday calendar columns when partial weeks are included. The default one-week inset keeps artwork away from the two partial boundary weeks. The renderer checks width and date boundaries rather than silently cropping artwork.
+The requested date window intersects 40 Sunday-to-Saturday calendar columns. By default, one partial week is reserved at both ends, leaving 38 full columns for artwork. Artwork that does not fit is rejected rather than silently cropped.
 
 ## Quick start
 
-Python 3.10 or newer is required. No third-party packages are needed.
+Python 3.10 or newer is required. The application has no runtime dependencies.
 
 ```bash
 git clone https://github.com/aminhassanpour1999/code-is-art.git
@@ -88,6 +88,7 @@ code-is-art/
 ├── .gitignore
 ├── LICENSE
 ├── README.md
+├── pyproject.toml
 └── requirements.txt
 ```
 
