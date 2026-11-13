@@ -58,7 +58,7 @@ def map_art_to_dates(
 
     for y, row in enumerate(matrix):
         # Artwork row 0 is Monday; row 4 is Friday.
-        day_offset = y + 1  # Sunday is offset 0, Monday is offset 1.
+        day_offset = y + 1
         for x, active in enumerate(row):
             if not active:
                 continue
@@ -72,3 +72,27 @@ def map_art_to_dates(
             mapped.append((commit_day, x, y))
 
     return sorted(mapped, key=lambda item: (item[0], item[1], item[2]))
+
+
+def render_calendar_matrix(
+    matrix: PixelMatrix,
+    start: date,
+    end: date,
+    offset_weeks: int = 1,
+) -> list[list[bool]]:
+    """Expand artwork into a seven-row Sunday-to-Saturday calendar matrix.
+
+    The returned matrix has one column per calendar week. Sunday (row 0)
+    and Saturday (row 6) are always empty. It is suitable for a full
+    contribution-calendar preview.
+    """
+    weeks = calendar_week_count(start, end)
+    first_sunday = sunday_on_or_before(start)
+    calendar = [[False] * weeks for _ in range(7)]
+
+    for day, _, _ in map_art_to_dates(matrix, start, end, offset_weeks):
+        column = (day - first_sunday).days // 7
+        row = day.weekday() + 1
+        calendar[row][column] = True
+
+    return calendar
