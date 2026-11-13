@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
 from collections.abc import Sequence
+from datetime import date, timedelta
 
 from .renderer import matrix_dimensions
 
@@ -32,8 +32,9 @@ def map_art_to_dates(
 ) -> list[tuple[date, int, int]]:
     """Return (date, x, y) for active pixels, mapping rows to Mon-Fri.
 
-    Sunday and Saturday are deliberately excluded. By default, one calendar
-    column is reserved at each boundary to avoid partial weeks.
+    Sunday and Saturday are deliberately excluded. One calendar column is
+    reserved at both boundaries by default, keeping artwork out of partial
+    first and last weeks.
     """
     height, width = matrix_dimensions(matrix)
     if height != 5:
@@ -44,24 +45,24 @@ def map_art_to_dates(
         raise ValueError("offset_weeks must be zero or greater.")
 
     weeks = calendar_week_count(start, end)
-    if offset_weeks + width > weeks:
+    available_art_columns = weeks - offset_weeks - 1
+    if width > available_art_columns:
         raise ValueError(
             f"Artwork is {width} columns wide but only "
-            f"{weeks - offset_weeks} columns remain after the offset."
+            f"{max(available_art_columns, 0)} columns fit between the "
+            "reserved boundary weeks."
         )
 
     first_sunday = sunday_on_or_before(start)
     mapped: list[tuple[date, int, int]] = []
 
     for y, row in enumerate(matrix):
-        # Artwork row 0 is Monday (weekday=0); row 4 is Friday (weekday=4).
+        # Artwork row 0 is Monday; row 4 is Friday.
         day_offset = y + 1  # Sunday is offset 0, Monday is offset 1.
         for x, active in enumerate(row):
             if not active:
                 continue
-            week_sunday = first_sunday + timedelta(
-                weeks=offset_weeks + x
-            )
+            week_sunday = first_sunday + timedelta(weeks=offset_weeks + x)
             commit_day = week_sunday + timedelta(days=day_offset)
             if not start <= commit_day <= end:
                 raise ValueError(
