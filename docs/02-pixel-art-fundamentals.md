@@ -55,7 +55,7 @@ GitHub's contribution calendar is arranged in columns of weeks and rows of weekd
 
 This project maps its five artwork rows to Monday, Tuesday, Wednesday, Thursday, and Friday. Sunday and Saturday are deliberately never assigned pixels.
 
-A filled pixel on a date becomes a planned commit group for that date. The default group size is six commits.
+A filled pixel on a date becomes exactly one planned commit for that date by default. Empty pixels produce no commits.
 
 ## Previewing the complete calendar
 
