@@ -25,7 +25,14 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Turn text into pixel art and a Git commit plan."
     )
-    parser.add_argument("--text", default="CODE", help="Text to render.")
+    parser.add_argument(
+        "--text", default="CODE IS ART",
+        help="Text to render (default: CODE IS ART).",
+    )
+    parser.add_argument(
+        "--font", choices=("3x5", "5x5"), default="3x5",
+        help="3x5 fits longer phrases; 5x5 supports digits and punctuation.",
+    )
     parser.add_argument(
         "--start", type=date.fromisoformat, default=date(2026, 1, 1),
         help="Inclusive start date (YYYY-MM-DD).",
@@ -40,7 +47,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--offset-weeks", type=int, default=1,
-        help="Empty calendar columns reserved before the artwork (default: 1).",
+        help="Empty calendar columns reserved at each boundary (default: 1).",
     )
     parser.add_argument(
         "--preview", action="store_true",
@@ -56,8 +63,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     try:
-        matrix = render_text(args.text)
-        print(f"\nArtwork: {args.text.upper()}")
+        matrix = render_text(args.text, compact=args.font == "3x5")
+        print(f"\nArtwork: {args.text.upper()} ({args.font})")
         print(render_ascii(matrix))
         if args.preview:
             return 0
