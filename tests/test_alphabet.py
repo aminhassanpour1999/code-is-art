@@ -11,8 +11,8 @@ class AlphabetTests(unittest.TestCase):
                 self.assertTrue(all(len(row) == 5 for row in glyph))
                 self.assertTrue(all(set(row) <= {".", "#"} for row in glyph))
 
-    def test_normalizes_lowercase(self):
-        self.assertEqual(normalize_text("code"), "CODE")
+    def test_normalizes_lowercase_and_surrounding_whitespace(self):
+        self.assertEqual(normalize_text("  code  "), "CODE")
 
     def test_rejects_unsupported_characters(self):
         with self.assertRaises(ValueError):
@@ -27,7 +27,10 @@ class AlphabetTests(unittest.TestCase):
         self.assertEqual(len(matrix), 5)
         self.assertTrue(all(isinstance(pixel, bool) for row in matrix for pixel in row))
 
-    def test_width_matches_rendered_matrix(self):
+    def test_width_matches_rendered_matrix_for_fixed_width_glyph(self):
+        self.assertEqual(text_width("J"), len(render_text("J")[0]))
+
+    def test_width_matches_rendered_matrix_for_words(self):
         self.assertEqual(text_width("CODE"), len(render_text("CODE")[0]))
 
 
