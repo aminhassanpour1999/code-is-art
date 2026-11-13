@@ -21,7 +21,7 @@ Here is the letter A:
 
 ```text
 .###.
-#...#
+#...
 #...#
 #####
 #...#
@@ -159,4 +159,4 @@ The first command uses the full font; the second uses the compact font.
 3. Explain why a row with four cells cannot be combined safely with rows that have five cells.
 4. Draw a 5×5 letter of your choice using only `#` and `.`.
 
-**Answers:** 1. 15. 2. The fifth row and first column. 3. The matrix would not be rectangular, so column positions would not line up. 4. Answers vary; check that your glyph has exactly five rows and five symbols in each row.
+**Answers:** 1. 14. 2. The fifth row and first column. 3. The matrix would not be rectangular, so column positions would not line up. 4. Answers vary; check that your glyph has exactly five rows and five symbols in each row.
