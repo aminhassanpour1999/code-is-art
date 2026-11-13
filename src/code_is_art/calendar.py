@@ -1,0 +1,73 @@
+"""Map five artwork rows onto Monday-Friday calendar dates."""
+
+from __future__ import annotations
+
+from datetime import date, timedelta
+from collections.abc import Sequence
+
+from .renderer import matrix_dimensions
+
+PixelMatrix = Sequence[Sequence[bool]]
+
+
+def sunday_on_or_before(day: date) -> date:
+    """Return the Sunday at the start of the week containing day."""
+    return day - timedelta(days=(day.weekday() + 1) % 7)
+
+
+def calendar_week_count(start: date, end: date) -> int:
+    """Count Sunday-to-Saturday columns intersecting the date range."""
+    if end < start:
+        raise ValueError("End date must not be earlier than start date.")
+    first = sunday_on_or_before(start)
+    last = sunday_on_or_before(end)
+    return ((last - first).days // 7) + 1
+
+
+def map_art_to_dates(
+    matrix: PixelMatrix,
+    start: date,
+    end: date,
+    offset_weeks: int = 1,
+) -> list[tuple[date, int, int]]:
+    """Return (date, x, y) for active pixels, mapping rows to Mon-Fri.
+
+    Sunday and Saturday are deliberately excluded. By default, one calendar
+    column is reserved at each boundary to avoid partial weeks.
+    """
+    height, width = matrix_dimensions(matrix)
+    if height != 5:
+        raise ValueError("Artwork must have exactly five rows (Monday-Friday).")
+    if end < start:
+        raise ValueError("End date must not be earlier than start date.")
+    if offset_weeks < 0:
+        raise ValueError("offset_weeks must be zero or greater.")
+
+    weeks = calendar_week_count(start, end)
+    if offset_weeks + width > weeks:
+        raise ValueError(
+            f"Artwork is {width} columns wide but only "
+            f"{weeks - offset_weeks} columns remain after the offset."
+        )
+
+    first_sunday = sunday_on_or_before(start)
+    mapped: list[tuple[date, int, int]] = []
+
+    for y, row in enumerate(matrix):
+        # Artwork row 0 is Monday (weekday=0); row 4 is Friday (weekday=4).
+        day_offset = y + 1  # Sunday is offset 0, Monday is offset 1.
+        for x, active in enumerate(row):
+            if not active:
+                continue
+            week_sunday = first_sunday + timedelta(
+                weeks=offset_weeks + x
+            )
+            commit_day = week_sunday + timedelta(days=day_offset)
+            if not start <= commit_day <= end:
+                raise ValueError(
+                    f"Pixel at x={x}, y={y} maps outside the date window: "
+                    f"{commit_day.isoformat()}"
+                )
+            mapped.append((commit_day, x, y))
+
+    return sorted(mapped, key=lambda item: (item[0], item[1], item[2]))
