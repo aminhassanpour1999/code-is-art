@@ -126,9 +126,10 @@ Before keeping a glyph, confirm:
 
 ## Exercises
 
-1. Draw a new 5×5 glyph for a character not currently supported by `FONT`.
-2. Add it to `FONT` and preview it.
-3. If the character is a letter A–Z, design a 3×5 version too and add it to `COMPACT_FONT`.
-4. Explain why the renderer does not need to know how a letter was designed.
+1. Choose an existing letter, such as `R`, and sketch an alternative 5×5 design.
+2. Replace that letter's entry in `FONT` and preview it with `--font 5x5`.
+3. Design a matching 3×5 version and replace the same letter in `COMPACT_FONT`.
+4. Preview it with `--font 3x5` and run the full test suite.
+5. Explain why changing a glyph does not require changing the renderer.
 
-**Expected reasoning:** the renderer only needs a valid five-row glyph of the selected width. The visual design is stored in the font dictionary, so the rendering algorithm can remain independent of individual letter shapes.
+**Expected reasoning:** the renderer reads a glyph from the selected font dictionary. As long as the glyph follows the correct dimensions and symbol rules, the rendering algorithm does not need to know how the letter was designed.
