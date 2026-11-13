@@ -1,0 +1,7 @@
+Example artwork: CODE
+
+Run:
+    python scripts/generate.py --text "CODE" --preview
+
+The preview is generated from the canonical bitmap font in
+src/code_is_art/alphabet.py. This file is a static reference only.
