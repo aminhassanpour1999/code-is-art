@@ -45,8 +45,8 @@ def parse_args() -> argparse.Namespace:
         help="Inclusive end date (YYYY-MM-DD).",
     )
     parser.add_argument(
-        "--commits-per-pixel", type=int, default=6,
-        help="Number of local commits for each filled pixel (default: 6).",
+        "--commits-per-pixel", type=int, default=1,
+        help="Number of local commits for each filled pixel (default: 1).",
     )
     parser.add_argument(
         "--offset-weeks", type=int, default=1,
