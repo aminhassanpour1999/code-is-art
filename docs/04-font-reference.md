@@ -1,6 +1,6 @@
 # 04 — Font Reference
 
-The canonical bitmap alphabet lives in `src/code_is_art/alphabet.py`. This page explains how to read and extend it.
+The canonical fonts live in `src/code_is_art/alphabet.py`.
 
 ## Pixel symbols
 
@@ -9,36 +9,46 @@ The canonical bitmap alphabet lives in `src/code_is_art/alphabet.py`. This page 
 | `#` | Filled pixel |
 | `.` | Empty pixel |
 
-## Glyph dimensions
+## Two font sizes
 
-Every glyph is 5 columns wide and 5 rows high. A one-column gap is inserted between adjacent characters. A space character is represented by additional horizontal spacing, not by a visible glyph.
+### Full font: 5×5
+
+The full font contains uppercase A–Z, digits 0–9, and common punctuation. Each glyph is five columns wide and five rows high. One empty column separates adjacent characters; word spaces are wider.
+
+### Compact font: 3×5
+
+The compact font contains uppercase A–Z. Each glyph is three columns wide and five rows high. It is designed for longer phrases that need to fit the 38 available calendar columns.
+
+The default artwork, `CODE IS ART`, uses the compact font and occupies 37 columns.
 
 ## Supported characters
 
-The built-in font includes:
+The 5×5 font includes:
 
 - Uppercase English letters A–Z.
 - Digits 0–9.
-- Common punctuation: period, comma, exclamation mark, question mark, colon, semicolon, hyphen, plus, slash, and apostrophe.
+- Period, comma, exclamation mark, question mark, colon, semicolon, hyphen, plus, slash, and apostrophe.
+
+The compact 3×5 font currently supports A–Z and spaces only. Choose the 5×5 font when your text contains numbers or punctuation.
 
 Text is normalized to uppercase. Unsupported characters raise a clear error rather than being silently discarded.
 
 ## Width calculation
 
-For a text containing N visible glyphs, with one column between adjacent glyphs, the width is:
+For a compact phrase containing N letters and one-column letter spacing, the glyph portion is:
 
 ```text
-width = (5 × N) + (1 × (N - 1))
+width = (3 × N) + letter gaps + word gaps
 ```
 
-Spaces are handled as wider gaps. The renderer exposes the actual computed width; use the preview command to inspect it.
+The renderer calculates the exact width. The calendar mapper rejects artwork that exceeds the available width; it never silently crops it.
 
-## Changing the font
+## Designing a letter
 
-Edit `FONT` in `alphabet.py`, preserving the five-by-five format. Run:
+For a 3×5 glyph, create exactly five strings with three characters each. For a 5×5 glyph, create exactly five strings with five characters each. Use only `#` and `.`.
+
+Edit the appropriate dictionary in `alphabet.py`, then run:
 
 ```bash
 python -m unittest discover -s tests -v
 ```
-
-A future version may support multiple font sizes. The current calendar mapper intentionally expects exactly five artwork rows.
