@@ -77,10 +77,12 @@ def main() -> int:
             matrix, args.start, args.end, args.offset_weeks
         )
         print("\nContribution calendar preview (Sunday to Saturday)")
-        print("      " + " ".join(f"{index + 1:02}" for index in range(weeks)))
-        print(render_ascii(calendar_matrix, separator=" "))
-        print("      " + " ".join("^^" for _ in range(weeks)))
-        print("      Sunday and Saturday rows are intentionally empty.")
+        print("       " + " ".join(f"{index + 1:02}" for index in range(weeks)))
+        day_labels = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+        for label, row in zip(day_labels, calendar_matrix):
+            pixels = " ".join("#" if active else "." for active in row)
+            print(f"{label:>3}    {pixels}")
+        print("      Each column represents one Sunday-to-Saturday week.")
 
         plan = build_commit_plan(
             matrix, args.start, args.end,
