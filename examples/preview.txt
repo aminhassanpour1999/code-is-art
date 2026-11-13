@@ -1,7 +1,22 @@
-Example artwork: CODE
+# Default Code Is Art preview
 
-Run:
-    python scripts/generate.py --text "CODE" --preview
+The default command renders the phrase CODE IS ART using the compact 3x5 font:
 
-The preview is generated from the canonical bitmap font in
-src/code_is_art/alphabet.py. This file is a static reference only.
+```bash
+python scripts/generate.py --preview
+```
+
+To preview another phrase:
+
+```bash
+python scripts/generate.py --text "HELLO WORLD" --font 3x5 --preview
+```
+
+For digits or punctuation, use the full 5x5 font:
+
+```bash
+python scripts/generate.py --text "A2026!" --font 5x5 --preview
+```
+
+This file documents the commands. The canonical glyph definitions are in
+src/code_is_art/alphabet.py, and the renderer generates the live preview.
