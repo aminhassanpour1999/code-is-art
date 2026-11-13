@@ -47,7 +47,7 @@ A dry run reports the number of active pixels, planned commits, date range, and 
 After inspecting the dry run, add `--execute`:
 
 ```bash
-python scripts/generate.py --text "CODE" --start 2026-01-01 --end 2026-09-30 --commits-per-pixel 6 --execute
+python scripts/generate.py --text "CODE" --start 2026-01-01 --end 2026-09-30 --commits-per-pixel 1 --execute
 ```
 
 Execution requires the current directory to be inside a Git repository. It creates local empty commits and does not push.
