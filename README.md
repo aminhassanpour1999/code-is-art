@@ -4,11 +4,12 @@
 
 **Code Is Art** is an educational Python project that converts text into pixel artwork and maps the pixels onto GitHub's contribution-calendar layout.
 
-The project teaches the complete process: bitmap fonts, two-dimensional matrices, calendar arithmetic, Git automation, validation, and testing.
+The project teaches bitmap fonts, two-dimensional matrices, calendar arithmetic, Git automation, validation, and testing.
 
 ## Features
 
-- A documented 5×5 bitmap alphabet (A–Z, digits, and punctuation).
+- Full 5×5 bitmap alphabet: A–Z, digits, and common punctuation.
+- Compact 3×5 alphabet: A–Z, designed for longer phrases.
 - Convert text into a rectangular pixel matrix.
 - Render artwork in the terminal or as plain text.
 - Map five artwork rows to Monday–Friday in GitHub's Sunday–Saturday calendar.
@@ -25,13 +26,15 @@ The project teaches the complete process: bitmap fonts, two-dimensional matrices
 | Project | Code Is Art |
 | Language | Python 3.10+ |
 | Artwork window | 2026-01-01 through 2026-09-30 |
-| Bitmap font | 5 columns × 5 rows |
+| Default artwork | CODE IS ART |
+| Default font | Compact 3×5 |
+| Full font | 5×5, including digits and punctuation |
 | Commits per active pixel | 6 by default |
 | Calendar top row | Sunday — always empty |
 | Calendar bottom row | Saturday — always empty |
 | License | MIT |
 
-The requested date window intersects 40 Sunday-to-Saturday calendar columns. By default, one partial week is reserved at both ends, leaving 38 full columns for artwork. Artwork that does not fit is rejected rather than silently cropped.
+The requested date window intersects 40 Sunday-to-Saturday calendar columns. One partial week is reserved at each boundary, leaving 38 full columns for artwork. The compact 3×5 rendering of **CODE IS ART** is 37 columns wide and fits inside this area. Artwork that does not fit is rejected rather than silently cropped.
 
 ## Quick start
 
@@ -48,19 +51,31 @@ python -m pip install -e .
 Preview the default artwork:
 
 ```bash
-python scripts/generate.py --text "CODE" --preview
+python scripts/generate.py --preview
+```
+
+Preview a custom phrase:
+
+```bash
+python scripts/generate.py --text "HELLO WORLD" --font 3x5 --preview
+```
+
+Use the full 5×5 font for digits and punctuation:
+
+```bash
+python scripts/generate.py --text "A2026!" --font 5x5 --preview
 ```
 
 Build and inspect a commit plan (dry run; no commits are created):
 
 ```bash
-python scripts/generate.py --text "CODE" --start 2026-01-01 --end 2026-09-30
+python scripts/generate.py
 ```
 
 Only after reviewing the preview and plan, create local commits:
 
 ```bash
-python scripts/generate.py --text "CODE" --start 2026-01-01 --end 2026-09-30 --commits-per-pixel 6 --execute
+python scripts/generate.py --execute
 ```
 
 The script does **not** push to GitHub. Review the local history first, then push manually if you choose to publish it. GitHub only displays eligible contributions when its contribution requirements are met; see [GitHub's contribution documentation](https://docs.github.com/en/account-and-profile/concepts/contributions-on-your-profile).
