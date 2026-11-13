@@ -1,54 +1,93 @@
 # 04 — Font Reference
 
-The canonical fonts live in `src/code_is_art/alphabet.py`.
+This page is a quick technical reference for the two bitmap fonts. For the step-by-step process of creating a glyph, read [03 — Designing Letters](03-designing-letters.md).
+
+The canonical definitions are in `src/code_is_art/alphabet.py`.
 
 ## Pixel symbols
 
-| Symbol | Meaning |
+| Symbol | Meaning | Boolean value |
+| --- | --- | --- |
+| `#` | Filled pixel | `True` |
+| `.` | Empty pixel | `False` |
+
+## Font comparison
+
+| Property | Full font | Compact font |
+| --- | --- | --- |
+| Dictionary | `FONT` | `COMPACT_FONT` |
+| Glyph width | 5 columns | 3 columns |
+| Glyph height | 5 rows | 5 rows |
+| Supported letters | A–Z | A–Z |
+| Digits | 0–9 | Not supported |
+| Punctuation | Supported list below | Not supported |
+| Letter spacing | 1 empty column | 1 empty column |
+| Word spacing | 3 empty columns | 2 empty columns |
+
+Both fonts normalize input to uppercase. Leading and trailing whitespace is removed. Unsupported characters raise `ValueError`; they are not silently discarded.
+
+## Full-font punctuation
+
+In addition to A–Z and 0–9, `FONT` supports:
+
+| Character | Name |
 | --- | --- |
-| `#` | Filled pixel |
-| `.` | Empty pixel |
+| `.` | Period |
+| `,` | Comma |
+| `!` | Exclamation mark |
+| `?` | Question mark |
+| `:` | Colon |
+| `;` | Semicolon |
+| `-` | Hyphen |
+| `+` | Plus |
+| `/` | Slash |
+| `'` | Apostrophe |
 
-## Two font sizes
-
-### Full font: 5×5
-
-The full font contains uppercase A–Z, digits 0–9, and common punctuation. Each glyph is five columns wide and five rows high. One empty column separates adjacent characters; word spaces are wider.
-
-### Compact font: 3×5
-
-The compact font contains uppercase A–Z. Each glyph is three columns wide and five rows high. It is designed for longer phrases that need to fit the 38 available calendar columns.
-
-The default artwork, `CODE IS ART`, uses the compact font and occupies 37 columns.
-
-## Supported characters
-
-The 5×5 font includes:
-
-- Uppercase English letters A–Z.
-- Digits 0–9.
-- Period, comma, exclamation mark, question mark, colon, semicolon, hyphen, plus, slash, and apostrophe.
-
-The compact 3×5 font currently supports A–Z and spaces only. Choose the 5×5 font when your text contains numbers or punctuation.
-
-Text is normalized to uppercase. Unsupported characters raise a clear error rather than being silently discarded.
+The compact font supports only A–Z and spaces. If your phrase contains a digit or punctuation mark, select `--font 5x5`.
 
 ## Width calculation
 
-For a compact phrase containing N letters and one-column letter spacing, the glyph portion is:
+The renderer calculates the exact width from the selected glyphs and spacing rules.
 
-```text
-width = (3 × N) + letter gaps + word gaps
-```
+For a full-font phrase:
 
-The renderer calculates the exact width. The calendar mapper rejects artwork that exceeds the available width; it never silently crops it.
+- Each visible character uses 5 columns.
+- One empty column separates adjacent letters.
+- A word space uses 3 empty columns.
 
-## Designing a letter
+For a compact phrase:
 
-For a 3×5 glyph, create exactly five strings with three characters each. For a 5×5 glyph, create exactly five strings with five characters each. Use only `#` and `.`.
+- Each visible character uses 3 columns.
+- One empty column separates adjacent letters.
+- A word space uses 2 empty columns.
 
-Edit the appropriate dictionary in `alphabet.py`, then run:
+Leading and trailing spaces do not add columns. Repeated internal spaces are treated as one word gap.
+
+Example previews:
 
 ```bash
-python -m unittest discover -s tests -v
+python scripts/generate.py --text "CODE IS ART" --font 3x5 --preview
+python scripts/generate.py --text "A2026!" --font 5x5 --preview
 ```
+
+## Calendar width
+
+The default date window intersects 40 Sunday-to-Saturday weeks. With one boundary week reserved at each end, the mapper allows at most 38 artwork columns.
+
+The default compact phrase `CODE IS ART` is 37 columns wide. The mapper checks the actual matrix width and raises an error if the artwork does not fit. It never crops the right side.
+
+## Useful functions
+
+| Function | Purpose |
+| --- | --- |
+| `normalize_text(text)` | Uppercases text, trims outer whitespace, and checks general character support. |
+| `text_width(text, compact=False)` | Calculates the rendered width for the selected font. |
+| `render_text(text, compact=False)` | Returns the five-row Boolean pixel matrix. |
+
+## Quick verification
+
+```bash
+PYTHONPATH=src python -m unittest discover -s tests -v
+```
+
+The font tests verify glyph dimensions, supported characters, normalization, and the default phrase width.
