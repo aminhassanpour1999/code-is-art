@@ -14,7 +14,7 @@ The project teaches bitmap fonts, two-dimensional matrices, calendar arithmetic,
 - Render artwork in the terminal or as plain text.
 - Map five artwork rows to Monday–Friday in GitHub's Sunday–Saturday calendar.
 - Keep the top (Sunday) and bottom (Saturday) contribution rows empty.
-- Plan a configurable number of commits per active pixel (default: 6).
+- Create exactly one commit per active pixel by default (configurable if desired).
 - Preview and validate a plan before creating any commits.
 - Generate local Git commits only after an explicit `--execute` flag.
 - Unit tests using Python's standard library.
@@ -29,7 +29,7 @@ The project teaches bitmap fonts, two-dimensional matrices, calendar arithmetic,
 | Default artwork | CODE IS ART |
 | Default font | Compact 3×5 |
 | Full font | 5×5, including digits and punctuation |
-| Commits per active pixel | 6 by default |
+| Commits per active pixel | 1 (default) |
 | Calendar top row | Sunday — always empty |
 | Calendar bottom row | Saturday — always empty |
 | License | MIT |
