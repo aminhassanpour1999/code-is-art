@@ -49,16 +49,6 @@ Python indexes start at zero, so this reads row 3, column 4.
 
 To write a word, place glyphs side by side and insert a column gap between them. Each glyph has the same height, so the resulting artwork remains rectangular.
 
-For example, a word can be visualized as a larger matrix:
-
-```text
-.###.  #####  ####.
-#...#  #...#  #...#
-#####  ####.  ####.
-#...#  #...#  #...#
-#...#  #####  ####.
-```
-
 ## Mapping pixels to dates
 
 GitHub's contribution calendar is arranged in columns of weeks and rows of weekdays. The top row is Sunday and the bottom row is Saturday.
@@ -66,6 +56,16 @@ GitHub's contribution calendar is arranged in columns of weeks and rows of weekd
 This project maps its five artwork rows to Monday, Tuesday, Wednesday, Thursday, and Friday. Sunday and Saturday are deliberately never assigned pixels.
 
 A filled pixel on a date becomes a planned commit group for that date. The default group size is six commits.
+
+## Previewing the complete calendar
+
+A normal artwork preview displays only the five rows of letters. A dry run also prints the full seven-row contribution calendar, including empty Sunday and Saturday rows and the reserved boundary weeks:
+
+```bash
+python scripts/generate.py
+```
+
+The full calendar preview has one column for every Sunday-to-Saturday week intersecting the requested date range.
 
 ## Important distinction
 
