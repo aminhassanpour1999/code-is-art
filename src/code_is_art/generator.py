@@ -37,7 +37,7 @@ def build_commit_plan(
     matrix: list[list[bool]],
     start: date,
     end: date,
-    commits_per_pixel: int = 6,
+    commits_per_pixel: int = 1,
     offset_weeks: int = 1,
 ) -> list[PlannedCommit]:
     """Create one planned commit per configured count for each active pixel."""
