@@ -24,7 +24,7 @@ class GeneratorTests(unittest.TestCase):
 
     def test_default_artwork_fits_and_uses_one_commit_per_pixel(self):
         matrix = render_text("CODE IS ART", compact=True)
-        plan = build_commit_plan(matrix, START, END, commits_per_pixel=6)
+        plan = build_commit_plan(matrix, START, END)
         active = sum(sum(row) for row in matrix)
         self.assertGreater(active, 0)
         self.assertEqual(len(plan), active)
